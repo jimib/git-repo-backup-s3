@@ -23,7 +23,6 @@ conn = S3Connection(AWS_KEY, AWS_SECRET)
 print 'Connected to S3...'
 
 #link to bucket
-bucketName = 'jimib-backups'
 print 'Open bucket "' + bucketName + '"...'
 bucket = conn.get_bucket(bucketName)
 print 'Opened bucket "' + bucketName + '"...'
