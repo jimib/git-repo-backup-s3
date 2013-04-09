@@ -51,16 +51,25 @@ def upload_cache(cachepath, target):
 	k.close()
 
 def is_cache_in_date(originalpath, cachepath):
-	
-	if not os.path.exists(cachepath):
-		return False
 
-	mtime_origin = os.stat(originalpath).st_mtime
-	mtime_cache = os.stat(cachepath).st_mtime
-	if mtime_origin > mtime_cache:
-		return False
-	
-	return True
+        if not os.path.exists(cachepath):
+                return False
+
+        mtime_origin = os.stat(originalpath).st_mtime
+        mtime_cache = os.stat(cachepath).st_mtime
+        if mtime_origin > mtime_cache:
+                return False
+        elif has_directory_been_modified_since(originalpath, mtime_cache):
+                return False
+
+        return True
+
+def has_directory_been_modified_since(path, mtime):
+        for root, dirnames, files in os.walk(path):
+                if os.stat(root).st_mtime > mtime:
+                        return True
+
+        return False
 
 #check each repository - if no cache or cache is out dated then we need to re-upload it
 for root, dirnames, files in os.walk(pathRootRepository):
