@@ -76,12 +76,14 @@ for root, dirnames, files in os.walk(pathRootRepository):
 	rootName = os.path.basename(root)
 	fileName, fileExtension = os.path.splitext(rootName)
 	if (fileExtension == ".git"):
-		pathRel = os.path.relpath(root, pathRootRepository) + ".tar.gz"
-		cachepath = os.path.join(pathRootCache, pathRel)
-		if not is_cache_in_date(root, cachepath):
-			create_cache(root, cachepath)
-			#need to upload
-			upload_cache(cachepath, pathRel)
+		gitName = os.path.relpath(root, pathRootRepository)
+        pathRel = gitName + ".tar.gz"
+        cachepath = os.path.join(pathRootCache, pathRel)
+        if not is_cache_in_date(root, cachepath):
+                arrUpdatedRepos.append(gitName)
+                create_cache(root, cachepath)
+                #need to upload
+                upload_cache(cachepath, pathRel)
 
 print "Completed check..."
 conn.close()
