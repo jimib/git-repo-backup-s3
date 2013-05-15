@@ -57,7 +57,9 @@ def is_cache_in_date(originalpath, cachepath):
 
         mtime_origin = os.stat(originalpath).st_mtime
         mtime_cache = os.stat(cachepath).st_mtime
-        if mtime_origin > mtime_cache:
+
+		#make sure the cache is more than 30seconds out date in case we downloaded as part of a restore
+        if mtime_origin > mtime_cache + 30000:
                 return False
         elif has_directory_been_modified_since(originalpath, mtime_cache):
                 return False
