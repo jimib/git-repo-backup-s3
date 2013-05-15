@@ -5,6 +5,8 @@ import os, tarfile
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 
+from git import *
+
 AWS_KEY = "<AWS_KEY>"
 AWS_SECRET = "<AWS_SECRET>"
 bucketName = 'jimib-backups'
@@ -85,15 +87,15 @@ for root, dirnames, files in os.walk(pathRootRepository):
 	fileName, fileExtension = os.path.splitext(rootName)
 	if (fileExtension == ".git"):
 		gitName = os.path.relpath(root, pathRootRepository)
-        pathRel = gitName + ".tar.gz"
-        cachepath = os.path.join(pathRootCache, pathRel)
+		pathRel = gitName + ".tar.gz"
+		cachepath = os.path.join(pathRootCache, pathRel)
 		
 		#only upload if cache is is out of date
-        if not is_cache_in_date(root, cachepath):
+		if not is_cache_in_date(root, cachepath):
 				
-				#get the last set of commits
-				git = Git(root)
-                gitDetails = "<strong>"+gitName+"</strong>"
+			#get the last set of commits
+			git = Git(root)
+			gitDetails = "<strong>"+gitName+"</strong>"
 
 				try:
 					logs =  git.log('--pretty=oneline', '--since=1.hour').split('\n')
@@ -102,9 +104,9 @@ for root, dirnames, files in os.walk(pathRootRepository):
 					pass
 
 				arrUpdatedRepos.append(gitDetails)
-                create_cache(root, cachepath)
-                #need to upload
-                upload_cache(cachepath, pathRel)
+				create_cache(root, cachepath)
+				#need to upload
+				upload_cache(cachepath, pathRel)
 
 print "Completed check..."
 conn.close()
