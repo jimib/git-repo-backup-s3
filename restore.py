@@ -70,7 +70,7 @@ def downloadDir(bucket, dirBucket, dirCache, dirRepo):
 					# extract all contents
 	    				tfile.extractall(dirpathrepo)
 	
-				os.utime(fullpath, None)
+			os.utime(fullpath, None)
 
 		#except:
 		#	print(key.name+":"+"FAILED")

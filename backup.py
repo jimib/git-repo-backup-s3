@@ -137,7 +137,7 @@ if len(arrUpdatedRepos) > 0:
 	session.ehlo
 	session.login(emailUser, emailPassword)
  
-	session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
+	session.sendmail(emailSender, emailRecipient, headers + "\r\n\r\n" + body)
 	session.quit()
 
 
