@@ -12,6 +12,12 @@ pathRootRepository = '/home/git/repositories'
 pathRootUpload = 'rpi-git'
 pathRootCache = '/home/git/s3-cache'
 
+#for emailing notifications (Using Gmail)
+emailSender = '<EMAIL_SENDER>' #could be the same as recipient - good way to identify git server
+emailRecipient = '<EMAIL_RECIPIENT>'
+emailUser = "<EMAIL_USERNAME>"
+emailPassword = "<EMAIL_PASSWORD>"
+
 def percent_cb(complete, total):
 	# pass
 	print complete, total
@@ -81,11 +87,53 @@ for root, dirnames, files in os.walk(pathRootRepository):
 		gitName = os.path.relpath(root, pathRootRepository)
         pathRel = gitName + ".tar.gz"
         cachepath = os.path.join(pathRootCache, pathRel)
+		
+		#only upload if cache is is out of date
         if not is_cache_in_date(root, cachepath):
-                arrUpdatedRepos.append(gitName)
+				
+				#get the last set of commits
+				git = Git(root)
+                gitDetails = "<strong>"+gitName+"</strong>"
+
+				try:
+					logs =  git.log('--pretty=oneline', '--since=1.hour').split('\n')
+					gitDetails = gitDetails + "<br>" + "<br>".join(logs)
+				except:
+					pass
+
+				arrUpdatedRepos.append(gitDetails)
                 create_cache(root, cachepath)
                 #need to upload
                 upload_cache(cachepath, pathRel)
 
 print "Completed check..."
 conn.close()
+
+#notify of changes
+if len(arrUpdatedRepos) > 0:
+        import smtplib
+
+        SMTP_SERVER = 'smtp.gmail.com'
+        SMTP_PORT = 587
+
+        subject = 'Git Repo Back Up'
+        body = "Modified Repos:<br><br>"
+        body = body + "<br><br>".join(arrUpdatedRepos)
+
+        headers = ["From: " + emailSender,
+           "Subject: " + subject,
+           "To: " + emailRecipient,
+           "Mime-Version: 1.0",
+           "Content-Type: text/html;"]
+
+        headers = "\r\n".join(headers)
+
+        session = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+
+        session.ehlo()
+        session.starttls()
+        session.ehlo
+        session.login(emailUser, emailPassword)
+
+        session.sendmail(sender, recipient, headers + "\r\n\r\n" + body)
+        session.quit()
