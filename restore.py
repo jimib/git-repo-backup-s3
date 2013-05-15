@@ -52,6 +52,9 @@ def downloadDir(bucket, dirBucket, dirCache, dirRepo):
 			#check the repository and if it doesn't exist unzip 
 			#from the cache 
 			fullpathrepo = os.path.join(dirRepo, path)
+			
+			if fullpathrepo.endswith(".tar.gz"):
+				fullpathrepo = fullpathrepo[:-len(".tar.gz")]
 
 			if not os.path.exists(fullpathrepo):
 				dirpathrepo = os.path.dirname(fullpathrepo)
@@ -65,7 +68,9 @@ def downloadDir(bucket, dirBucket, dirCache, dirRepo):
 				if tarfile.is_tarfile(fullpath):
 					tfile = tarfile.open(fullpath)
 					# extract all contents
-	    				tfile.extractall(fullpathrepo)
+	    				tfile.extractall(dirpathrepo)
+	
+				os.utime(fullpath, None)
 
 		#except:
 		#	print(key.name+":"+"FAILED")
